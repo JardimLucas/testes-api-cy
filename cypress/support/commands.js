@@ -35,7 +35,7 @@ Cypress.Commands.add('token', (email, senha) => {
         expect(response.status).to.equal(200)
         return response.body.authorization
     })
- })
+ });
 
  Cypress.Commands.add('cadastrarProduto' , (token, produto, preco, descricao, quantidade) =>{
     cy.request({
@@ -49,5 +49,19 @@ Cypress.Commands.add('token', (email, senha) => {
             "quantidade": quantidade
           }, 
           failOnStatusCode: false
+    })
+ });
+
+ Cypress.Commands.add('cadastrarUsuarios' , (nome, email, password, administrador) => {
+    cy.request({
+        method: 'POST',
+        url: 'usuarios',
+        body: {
+            "nome": nome,
+            "email": email,
+            "password": password,
+            "administrador": administrador
+        },
+        failOnStatusCode: false
     })
  })
