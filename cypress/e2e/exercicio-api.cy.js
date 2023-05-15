@@ -1,6 +1,11 @@
 /// <reference types = 'cypress' />
 
+import Faker from 'faker-br/lib';
 import contrato from '../contracts/usuarios.contract'
+import faker from 'faker-br';
+import Fake from 'faker-br/lib/fake';
+       
+
 
 describe('Testes da Funcionalidade Usuários', () => {
     
@@ -15,7 +20,7 @@ describe('Testes da Funcionalidade Usuários', () => {
                method: 'GET',
                url: 'usuarios'
           }).then((response) => {
-               expect(response.body.usuarios[0].nome).to.equal('Lucas Silva e Silva')
+               expect(response.body.usuarios[1].nome).to.equal('Arnaldo Biruleibe')
                expect(response.status).to.equal(200)
                expect(response.body).to.have.property('usuarios')
                expect(response.duration).to.be.lessThan(20)
@@ -23,12 +28,14 @@ describe('Testes da Funcionalidade Usuários', () => {
      });
 
      it('Deve cadastrar um usuário com sucesso', () => {
+          let nomefaker = faker.name.firstName()
+          let emailfaker = faker.internet.email()
           cy.request({
                method: 'POST',
                url: 'usuarios',
                body: {
-                    nome: "Arnaldo Biruleibe",
-                    email: "arnaldo.biruleibe@qa.com.br",
+                    nome: nomefaker,
+                    email: emailfaker,
                     password: "teste",
                     administrador: "true"
                },
@@ -39,6 +46,14 @@ describe('Testes da Funcionalidade Usuários', () => {
      });
 
      it('Deve validar um usuário com email inválido', () => {
+          cy.cadastrarUsuarios('Abacuque Pirilampo', 'beltrano.qa.com.br', 'teste', 'true')
+          .then((response) => {
+               expect(response.status).to.equal(400)
+               expect(response.body.email).to.equal('email deve ser um email válido')
+          })
+     });
+
+     it('Deve validar um usuário com email já cadastrado', () => {
           cy.cadastrarUsuarios('Abacuque Pirilampo', 'beltrano@qa.com.br', 'teste', 'true')
           .then((response) => {
                expect(response.status).to.equal(400)
@@ -47,14 +62,17 @@ describe('Testes da Funcionalidade Usuários', () => {
      });
 
      it('Deve editar um usuário previamente cadastrado', () => {
-          cy.request('usuarios').then(response => {
-               let id =  (response.body.usuarios[2]._id)
+          let nomefaker = faker.name.firstName()
+          let emailfaker = faker.internet.email()
+          cy.cadastrarUsuarios(nomefaker, emailfaker, 'teste', 'true')
+          .then(response => {
+               let id = response.body._id          
                cy.request({
                     method: 'PUT',
                     url: `usuarios/${id}`,
                     body: {
-                         nome: "Galvao Bueno",
-                         email: "galvao.bueno@qa.com.br",
+                         nome: nomefaker,
+                         email: emailfaker,
                          password: "teste",
                          administrador: "true"
                     }
@@ -65,7 +83,7 @@ describe('Testes da Funcionalidade Usuários', () => {
      });
 
      it('Deve deletar um usuário previamente cadastrado', () => {
-          cy.cadastrarUsuarios('Esdras Sofonias', 'esdras.sofonias@qa.com.br', 'teste', 'true')
+          cy.cadastrarUsuarios('Indiana Jones', 'indiana.jones@qa.com.br', 'teste', 'true')
           .then(response => {
                let id = response.body._id
           cy.request({
