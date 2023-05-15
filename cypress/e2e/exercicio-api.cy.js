@@ -20,7 +20,7 @@ describe('Testes da Funcionalidade Usuários', () => {
                method: 'GET',
                url: 'usuarios'
           }).then((response) => {
-               expect(response.body.usuarios[1].nome).to.equal('Arnaldo Biruleibe')
+               expect(response.body.usuarios[2].nome).to.equal('Arnaldo Biruleibe')
                expect(response.status).to.equal(200)
                expect(response.body).to.have.property('usuarios')
                expect(response.duration).to.be.lessThan(20)
